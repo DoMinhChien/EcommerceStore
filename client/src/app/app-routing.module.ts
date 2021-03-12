@@ -10,9 +10,13 @@ const routes: Routes = [
   {path: 'test-error', component: TestErrorComponent, data: {breadcrumb: 'Test-error'}},
   {path: 'not-found', component: NotFoundComponent, data: {breadcrumb: 'not-found'}},
   {path: 'server-error', component: ServerErrorComponent, data: {breadcrumb: 'Server-error'}},
-  {path: 'shop', loadChildren: () => import('./shop/shop.module').then(m => m.ShopModule), 
+  {path: 'shop', loadChildren: () => import('./shop/shop.module').then(m => m.ShopModule),
   data: {breadcrumb: 'Shop'}},
-  {path: '**', redirectTo:'', pathMatch:'full'},
+  {path: 'basket', loadChildren: () => import('./basket/basket.module').then(m => m.BasketModule),
+  data: {breadcrumb: 'Basket'}},
+  {path: 'checkout', loadChildren: () => import('./checkout/checkout.module').then(m => m.CheckoutModule),
+  data: {breadcrumb: 'Checkout'}},
+  {path: '**', redirectTo: 'not-found', pathMatch: 'full'},
 
 ];
 
