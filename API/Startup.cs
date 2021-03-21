@@ -11,10 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using StackExchange.Redis;
-
+using Infrastructure.Identity;
 namespace API
 {
-    public class Startup
+   public class Startup
     {
         private readonly IConfiguration _config;
         public Startup(IConfiguration config)
@@ -27,14 +27,10 @@ namespace API
             services.AddDbContext<StoreContext>(x =>
                 x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
 
-            services.AddSingleton<IConnectionMultiplexer>( c => {
-                var configuration = ConfigurationOptions.Parse(_config.GetConnectionString("Redis"),true);
-                return ConnectionMultiplexer.Connect(configuration);
+            services.AddDbContext<AppIdentityDbContext>(x => 
+            {
+                x.UseSqlite(_config.GetConnectionString("IdentityConnection"));
             });
-            // services.AddDbContext<AppIdentityDbContext>(x => 
-            // {
-            //     x.UseSqlite(_config.GetConnectionString("IdentityConnection"));
-            // });
 
             ConfigureServices(services);
         }
@@ -49,7 +45,7 @@ namespace API
             //     x.UseMySql(_config.GetConnectionString("IdentityConnection"));
             // });
 
-            ConfigureServices(services);
+            // ConfigureServices(services);
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -58,14 +54,14 @@ namespace API
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
 
-            // services.AddSingleton<IConnectionMultiplexer>(c => {
-            //     var configuration = ConfigurationOptions.Parse(_config
-            //         .GetConnectionString("Redis"), true);
-            //     return ConnectionMultiplexer.Connect(configuration);
-            // });
+            services.AddSingleton<IConnectionMultiplexer>(c => {
+                var configuration = ConfigurationOptions.Parse(_config
+                    .GetConnectionString("Redis"), true);
+                return ConnectionMultiplexer.Connect(configuration);
+            });
 
             services.AddApplicationServices();
-            //services.AddIdentityServices(_config);
+            services.AddIdentityServices(_config);
             services.AddSwaggerDocumentation();
             services.AddCors(opt => 
             {
@@ -79,7 +75,6 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
