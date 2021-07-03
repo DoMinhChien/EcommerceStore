@@ -21,11 +21,11 @@ export class CheckoutReviewComponent implements OnInit {
   }
 
   createPaymentIntent() {
-    this.appStepper.next();
-    // return this.basketService.createPaymentIntent().subscribe((response: any) => {
-    //   this.appStepper.next();
-    // }, error => {
-    //   console.log(error);
-    // });
+    return this.basketService.createPaymentIntent().subscribe((response: any) => {
+      this.appStepper.next();
+      this.toastr.success('Successfully!');
+    }, error => {
+      console.log(error);
+    });
   }
 }
